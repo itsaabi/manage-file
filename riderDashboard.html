@@ -1,0 +1,2533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Rider Dashboard | Blockchain Profile</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Libraries -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-light: #4895ef;
+        --primary-dark: #3a0ca3;
+        --secondary: #f72585;
+        --accent: #4cc9f0;
+        --dark: #0c0f1f;
+        --dark-2: #1a1d2e;
+        --light: #f8f9fa;
+        --gray: #8e94a5;
+        --success: #4ade80;
+        --danger: #f87171;
+        --warning: #fbbf24;
+        --info: #60a5fa;
+        --gradient: linear-gradient(
+          135deg,
+          var(--primary) 0%,
+          var(--accent) 100%
+        );
+        --glass: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        --shadow-primary: 0 0 15px rgba(67, 97, 238, 0.3);
+        --elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
+        --elevation-2: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --elevation-3: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --elevation-4: 0 20px 25px rgba(0, 0, 0, 0.1);
+        --elevation-5: 0 25px 50px rgba(0, 0, 0, 0.25);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background-color: var(--dark);
+        color: white;
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        line-height: 1.5;
+      }
+
+      /* 3D Floating Elements */
+      .floating-element {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.15;
+        z-index: 0;
+        animation: floatElement 12s ease-in-out infinite;
+      }
+
+      #floating-1 {
+        width: 300px;
+        height: 300px;
+        background: var(--primary);
+        top: -100px;
+        left: -100px;
+        animation-delay: 0s;
+      }
+
+      #floating-2 {
+        width: 400px;
+        height: 400px;
+        background: var(--secondary);
+        bottom: -150px;
+        right: -100px;
+        animation-delay: 2s;
+      }
+
+      #floating-3 {
+        width: 200px;
+        height: 200px;
+        background: var(--accent);
+        top: 40%;
+        right: 20%;
+        animation-delay: 4s;
+      }
+
+      @keyframes floatElement {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+        }
+        50% {
+          transform: translateY(-20px) scale(1.1);
+        }
+      }
+
+      /* Glass Morphism Effect */
+      .glass {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .glass-hover:hover {
+        background: rgba(67, 97, 238, 0.1);
+        border-color: rgba(67, 97, 238, 0.3);
+      }
+
+      /* Dashboard Container */
+      .dashboard-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Modern Sidebar */
+      .sidebar {
+        width: 280px;
+        background: var(--dark-2);
+        padding: 1.5rem;
+        transition: var(--transition-slow);
+        position: relative;
+        overflow: hidden;
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar-header img {
+        width: 36px;
+        margin-right: 12px;
+        filter: drop-shadow(0 0 8px rgba(67, 97, 238, 0.5));
+      }
+
+      .sidebar-header h3 {
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+        font-family: "Manrope", sans-serif;
+      }
+
+      /* Profile Card */
+      .profile-card {
+        background: var(--dark-2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        transition: var(--transition);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--elevation-2);
+      }
+
+      .profile-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient);
+      }
+
+      .profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        margin: 0 auto 1rem;
+        transition: var(--transition);
+        position: relative;
+        z-index: 1;
+      }
+
+      .profile-card:hover .profile-img {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.3);
+      }
+
+      .profile-name {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        font-size: 1.1rem;
+      }
+
+      .profile-email {
+        color: var(--gray);
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+        word-break: break-all;
+      }
+
+      .wallet-address {
+        background: rgba(67, 97, 238, 0.1);
+        color: white;
+        padding: 0.5rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-family: monospace;
+        word-break: break-all;
+        margin-bottom: 1rem;
+        display: none;
+        border: 1px solid rgba(67, 97, 238, 0.2);
+      }
+
+      /* Navigation Menu */
+      .nav-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--gray);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: var(--transition);
+        font-weight: 500;
+      }
+
+      .nav-link i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+        font-size: 1rem;
+        color: var(--gray);
+        transition: var(--transition);
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background: rgba(67, 97, 238, 0.1);
+        color: white;
+        transform: translateX(4px);
+      }
+
+      .nav-link:hover i,
+      .nav-link.active i {
+        color: var(--primary);
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        background: var(--dark);
+        overflow-y: auto;
+        position: relative;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .header h1 {
+        color: white;
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .user-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Modern Button Styles */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .btn i {
+        margin-right: 8px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 14px rgba(67, 97, 238, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+        box-shadow: 0 4px 14px rgba(248, 113, 113, 0.3);
+      }
+
+      .btn-danger:hover {
+        background: #ef4444;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(248, 113, 113, 0.4);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        padding: 0;
+      }
+
+      /* Ripple Effect */
+      .ripple {
+        position: absolute;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+      }
+
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--dark-2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--elevation-1);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--elevation-3);
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient);
+      }
+
+      .stat-value {
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .stat-label {
+        color: var(--gray);
+        font-size: 0.9rem;
+      }
+
+      /* Profile Section */
+      .profile-section {
+        background: var(--dark-2);
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: var(--transition);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: var(--elevation-1);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .section-header h2 {
+        color: white;
+        font-weight: 600;
+        font-size: 1.5rem;
+        margin: 0;
+        font-family: "Manrope", sans-serif;
+      }
+
+      /* Profile Image Large */
+      .profile-img-container {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .profile-img-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary);
+        box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.2);
+        transition: var(--transition);
+      }
+
+      .profile-img-large:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(67, 97, 238, 0.3);
+      }
+
+      /* Profile Grid */
+      .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .profile-info-card {
+        background: var(--dark-2);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: var(--transition);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: var(--elevation-1);
+      }
+
+      .profile-info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--elevation-2);
+      }
+
+      .info-label {
+        color: var(--gray);
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .info-label i {
+        margin-right: 8px;
+        color: var(--primary);
+      }
+
+      .info-value {
+        color: white;
+        font-weight: 500;
+        font-size: 1.1rem;
+        word-break: break-word;
+      }
+
+      /* Ride History Table */
+      .ride-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        background: var(--dark-2);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .ride-table th,
+      .ride-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .ride-table th {
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: rgba(67, 97, 238, 0.1);
+      }
+
+      .ride-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .ride-table tr:hover {
+        background: rgba(67, 97, 238, 0.05);
+      }
+
+      .ride-status {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status-completed {
+        background: rgba(74, 222, 128, 0.1);
+        color: var(--success);
+      }
+
+      .status-cancelled {
+        background: rgba(248, 113, 113, 0.1);
+        color: var(--danger);
+      }
+
+      .status-pending {
+        background: rgba(251, 191, 36, 0.1);
+        color: var(--warning);
+      }
+
+      .driver-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .driver-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary-light);
+      }
+
+      .vehicle-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        background: rgba(76, 201, 240, 0.1);
+        color: var(--accent);
+        display: inline-block;
+      }
+
+      /* Wallet Card */
+      .wallet-card {
+        background: var(--dark-2);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--elevation-1);
+      }
+
+      .wallet-balance {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        color: white;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .wallet-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      /* Settings Form */
+      .settings-form {
+        margin-top: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--gray);
+        font-weight: 500;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: white;
+        transition: var(--transition);
+        font-family: "Inter", sans-serif;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+
+      .form-check {
+        display: flex;
+        align-items: center;
+      }
+
+      .form-check-input {
+        margin-right: 0.5rem;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+      }
+
+      .form-check-label {
+        color: white;
+        font-size: 0.95rem;
+      }
+
+      /* Help Section */
+      .help-item {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .help-item h3 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        font-family: "Manrope", sans-serif;
+      }
+
+      .help-item p {
+        color: var(--gray);
+        line-height: 1.6;
+      }
+
+      /* Mobile Menu Button */
+      .mobile-menu-btn {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        z-index: 100;
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .mobile-menu-btn:hover {
+        transform: scale(1.1);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 992px) {
+        .sidebar {
+          width: 250px;
+          padding: 1.5rem 1rem;
+        }
+
+        .profile-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: -280px;
+          width: 280px;
+          height: 100vh;
+          z-index: 90;
+          padding: 1.5rem;
+          transition: var(--transition);
+        }
+
+        .sidebar.active {
+          left: 0;
+        }
+
+        .main-content {
+          padding: 1.5rem;
+          margin-left: 0;
+        }
+
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .user-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .profile-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .mobile-menu-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        /* Responsive table styles */
+        .ride-table {
+          display: block;
+        }
+
+        .ride-table thead {
+          display: none;
+        }
+
+        .ride-table tr {
+          display: block;
+          margin-bottom: 1rem;
+          border-radius: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ride-table td {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ride-table td::before {
+          content: attr(data-label);
+          font-weight: 600;
+          color: var(--gray);
+          margin-right: 1rem;
+          font-size: 0.85rem;
+        }
+
+        .ride-table td:last-child {
+          border-bottom: none;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .btn {
+          padding: 0.6rem 1rem;
+          font-size: 0.85rem;
+        }
+
+        .btn i {
+          margin-right: 6px;
+        }
+
+        .profile-img-large {
+          width: 100px;
+          height: 100px;
+        }
+
+        .wallet-actions {
+          flex-direction: column;
+        }
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fadeIn {
+        animation: fadeIn 0.5s ease forwards;
+      }
+
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+      .delay-4 {
+        animation-delay: 0.4s;
+      }
+
+      /* Tab Content */
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating Background Elements -->
+    <div id="floating-1" class="floating-element"></div>
+    <div id="floating-2" class="floating-element"></div>
+    <div id="floating-3" class="floating-element"></div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2965/2965300.png"
+            alt="Logo"
+          />
+          <h3>Neon Rider</h3>
+        </div>
+
+        <div class="profile-card animate__animated animate__fadeIn delay-1">
+          <img id="sidebar-profile-img" alt="Profile" class="profile-img" />
+          <h4 id="sidebar-profile-name" class="profile-name">Loading...</h4>
+          <p id="sidebar-profile-email" class="profile-email">
+            user@example.com
+          </p>
+          <div id="wallet-address" class="wallet-address">0x1234...5678</div>
+        </div>
+
+        <ul class="nav-menu">
+          <li class="nav-item animate__animated animate__fadeIn delay-2">
+            <a href="#" class="nav-link active" data-tab="profile">
+              <i class="fas fa-user"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item animate__animated animate__fadeIn delay-3">
+            <a href="#" class="nav-link" data-tab="rides">
+              <i class="fas fa-motorcycle"></i>
+              <span>Rides</span>
+            </a>
+          </li>
+          <li class="nav-item animate__animated animate__fadeIn delay-4">
+            <a href="#" class="nav-link" data-tab="history">
+              <i class="fas fa-history"></i>
+              <span>History</span>
+            </a>
+          </li>
+          <li class="nav-item animate__animated animate__fadeIn delay-1">
+            <a href="#" class="nav-link" data-tab="wallet">
+              <i class="fas fa-wallet"></i>
+              <span>Wallet</span>
+            </a>
+          </li>
+          <li class="nav-item animate__animated animate__fadeIn delay-2">
+            <a href="#" class="nav-link" data-tab="settings">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item animate__animated animate__fadeIn delay-3">
+            <a href="#" class="nav-link" data-tab="help">
+              <i class="fas fa-question-circle"></i>
+              <span>Help</span>
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <div class="header">
+          <h1 class="animate__animated animate__fadeIn" id="page-title">
+            Rider Dashboard
+          </h1>
+          <div class="user-actions">
+            <button
+              class="btn btn-danger animate__animated animate__fadeIn delay-1"
+              id="request-ride-btn"
+            >
+              <i class="fas fa-motorcycle"></i>
+              <span>Request Ride</span>
+            </button>
+            <button
+              class="btn btn-primary animate__animated animate__fadeIn delay-2"
+              id="request-shared-ride-btn"
+            >
+              <i class="fas fa-users"></i>
+              <span>Shared Ride</span>
+            </button>
+            <button
+              class="btn btn-secondary btn-icon animate__animated animate__fadeIn delay-3"
+            >
+              <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Tab Content -->
+        <div id="profile-tab" class="tab-content active">
+          <!-- Stats Section -->
+          <div class="stats-grid">
+            <div class="stat-card animate__animated animate__fadeIn delay-1">
+              <h3 class="stat-label">Total Rides</h3>
+              <div class="stat-value">127</div>
+            </div>
+            <div class="stat-card animate__animated animate__fadeIn delay-4">
+              <h3 class="stat-label">Member Since</h3>
+              <div id="member-since" class="stat-value">2023</div>
+            </div>
+          </div>
+
+          <!-- Profile Section -->
+          <section class="profile-section animate__animated animate__fadeIn">
+            <div class="section-header">
+              <h2>Profile Information</h2>
+              <button class="btn btn-primary">
+                <i class="fas fa-edit"></i>
+                <span>Edit Profile</span>
+              </button>
+            </div>
+
+            <div class="profile-img-container">
+              <img
+                id="profile-img-large"
+                alt="Profile"
+                class="profile-img-large"
+              />
+            </div>
+
+            <div class="profile-grid">
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-1"
+              >
+                <div class="info-label">
+                  <i class="fas fa-user"></i>
+                  <span>Full Name</span>
+                </div>
+                <div id="full-name" class="info-value">Loading...</div>
+              </div>
+
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-2"
+              >
+                <div class="info-label">
+                  <i class="fas fa-envelope"></i>
+                  <span>Email Address</span>
+                </div>
+                <div id="profile-email" class="info-value">
+                  user@example.com
+                </div>
+              </div>
+
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-3"
+              >
+                <div class="info-label">
+                  <i class="fas fa-phone"></i>
+                  <span>Phone Number</span>
+                </div>
+                <div id="phone-number" class="info-value">+1 234 567 890</div>
+              </div>
+
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-4"
+              >
+                <div class="info-label">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>Address</span>
+                </div>
+                <div id="profile-address" class="info-value">
+                  123 Main St, City, Country
+                </div>
+              </div>
+
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-1"
+              >
+                <div class="info-label">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span>Registration Date</span>
+                </div>
+                <div id="registration-date" class="info-value">
+                  January 1, 2023
+                </div>
+              </div>
+
+              <div
+                class="profile-info-card animate__animated animate__fadeIn delay-2"
+              >
+                <div class="info-label">
+                  <i class="fas fa-id-card"></i>
+                  <span>Rider ID</span>
+                </div>
+                <div id="rider-id" class="info-value">RIDER-123456</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent Activity Section -->
+          <section
+            class="profile-section animate__animated animate__fadeIn delay-2"
+          >
+            <div class="section-header">
+              <h2>Recent Activity</h2>
+              <button class="btn btn-secondary">
+                <i class="fas fa-ellipsis-h"></i>
+              </button>
+            </div>
+
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-motorcycle"></i>
+                </div>
+                <div class="activity-content">
+                  <h4>Completed Ride #127</h4>
+                  <p>Today at 3:45 PM • 5.2 miles • $12.50</p>
+                </div>
+                <div class="activity-rating">
+                  <i class="fas fa-star"></i>
+                  <span>5.0</span>
+                </div>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-wallet"></i>
+                </div>
+                <div class="activity-content">
+                  <h4>Payment Received</h4>
+                  <p>Today at 3:50 PM • $12.50 added to wallet</p>
+                </div>
+                <div class="activity-amount">+$12.50</div>
+              </div>
+
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <div class="activity-content">
+                  <h4>New Achievement</h4>
+                  <p>100 Rides Completed • Top 10% of riders</p>
+                </div>
+                <div class="activity-badge">
+                  <i class="fas fa-award"></i>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Rides Tab Content -->
+        <div id="rides-tab" class="tab-content">
+          <section class="profile-section">
+            <div class="section-header">
+              <h2>Your Rides</h2>
+              <button class="btn btn-primary" id="refresh-rides">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="rides-list">
+              <table class="ride-table">
+                <thead>
+                  <tr>
+                    <th>Ride ID</th>
+                    <th>Date</th>
+                    <th>Distance</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="rides-table-body">
+                  <!-- Rides will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- History Tab Content -->
+        <div id="history-tab" class="tab-content">
+          <section class="profile-section">
+            <div class="section-header">
+              <h2>Ride History</h2>
+              <button class="btn btn-primary" id="refresh-history">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="history-list">
+              <table class="ride-table">
+                <thead>
+                  <tr>
+                    <th>Ride ID</th>
+                    <th>Date</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Driver</th>
+                    <th>Vehicle</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- History will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Wallet Tab Content -->
+        <div id="wallet-tab" class="tab-content">
+          <section class="profile-section">
+            <div class="section-header">
+              <h2>Wallet</h2>
+              <button class="btn btn-primary" id="refresh-wallet">
+                <i class="fas fa-sync-alt"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="wallet-card">
+              <div class="info-label">
+                <i class="fas fa-wallet"></i>
+                <span>Current Balance</span>
+              </div>
+              <div class="wallet-balance" id="wallet-balance">$1,245.75</div>
+              <div class="info-value" id="wallet-address-display">
+                Wallet: 0x1234...5678
+              </div>
+
+              <div class="wallet-actions">
+                <button class="btn btn-primary">
+                  <i class="fas fa-plus"></i>
+                  <span>Add Funds</span>
+                </button>
+                <button class="btn btn-secondary">
+                  <i class="fas fa-exchange-alt"></i>
+                  <span>Transfer</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="transaction-history">
+              <h3>Transaction History</h3>
+              <table class="ride-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="transaction-history-body">
+                  <!-- Transactions will be loaded here -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Settings Tab Content -->
+        <div id="settings-tab" class="tab-content">
+          <section class="profile-section">
+            <div class="section-header">
+              <h2>Settings</h2>
+              <button class="btn btn-primary" id="save-settings">
+                <i class="fas fa-save"></i>
+                <span>Save Changes</span>
+              </button>
+            </div>
+
+            <div class="settings-form">
+              <div class="form-group">
+                <label class="form-label">Notification Preferences</label>
+                <select class="form-control" id="notification-pref">
+                  <option value="all">All Notifications</option>
+                  <option value="important">Important Only</option>
+                  <option value="none">No Notifications</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Theme</label>
+                <select class="form-control" id="theme-pref">
+                  <option value="dark">Dark Mode</option>
+                  <option value="light">Light Mode</option>
+                  <option value="system">System Default</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Language</label>
+                <select class="form-control" id="language-pref">
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    id="location-sharing"
+                  />
+                  <label class="form-check-label" for="location-sharing"
+                    >Enable Location Sharing</label
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Help Tab Content -->
+        <div id="help-tab" class="tab-content">
+          <section class="profile-section">
+            <div class="section-header">
+              <h2>Help Center</h2>
+              <button class="btn btn-primary" id="contact-support">
+                <i class="fas fa-headset"></i>
+                <span>Contact Support</span>
+              </button>
+            </div>
+
+            <div class="help-content">
+              <div class="help-item">
+                <h3>How to request a ride?</h3>
+                <p>
+                  Click on the "Request Ride" button in the top right corner of
+                  your dashboard. Enter your pickup and destination locations,
+                  then confirm your ride request.
+                </p>
+              </div>
+
+              <div class="help-item">
+                <h3>How payments work?</h3>
+                <p>
+                  All payments are processed securely through your wallet. You
+                  can add funds to your wallet or link a payment method for
+                  automatic top-ups when your balance is low.
+                </p>
+              </div>
+
+              <div class="help-item">
+                <h3>Safety features</h3>
+                <p>
+                  We prioritize your safety with features like real-time
+                  tracking, emergency contacts, and ride sharing with trusted
+                  contacts.
+                </p>
+              </div>
+
+              <div class="help-item">
+                <h3>Rider ratings</h3>
+                <p>
+                  Your rider rating is calculated based on your ride history and
+                  feedback from drivers. Maintain good behavior to keep your
+                  rating high.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- MetaMask SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@metamask/sdk@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        // First fix any broken data
+        fixBrokenLocalStorage();
+
+        // Then clean up
+        cleanupLocalStorage();
+        // Add ripple effect to buttons
+        function addRippleEffect(button) {
+          button.addEventListener("click", function (e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const ripple = document.createElement("span");
+            ripple.classList.add("ripple");
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            this.appendChild(ripple);
+
+            setTimeout(() => {
+              ripple.remove();
+            }, 600);
+          });
+        }
+
+        // Add ripple to all buttons
+        document.querySelectorAll(".btn").forEach((btn) => {
+          addRippleEffect(btn);
+        });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById("mobile-menu-btn");
+        const sidebar = document.querySelector(".sidebar");
+
+        if (mobileMenuBtn && sidebar) {
+          mobileMenuBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("active");
+          });
+        }
+
+        // Check if rider data exists
+        const riderData = JSON.parse(sessionStorage.getItem("currentRider"));
+        if (!riderData) {
+          window.location.href = "riderLogin.html";
+          return;
+        }
+
+        // Display rider data with profile image - Modified to check localStorage first
+        async function displayRiderData(riderData) {
+          // Check localStorage first for profile image
+          let profileImageUrl = localStorage.getItem("riderProfileImage");
+          console.log(
+            "Dashboard: Profile image from localStorage:",
+            profileImageUrl ? "Found" : "Not found"
+          );
+
+          // If not in localStorage, use the one from sessionStorage
+          if (!profileImageUrl && riderData.profilePicUrl) {
+            profileImageUrl = riderData.profilePicUrl;
+            console.log("Dashboard: Using profile image from sessionStorage");
+          }
+
+          // Fallback to default image if none found
+          if (!profileImageUrl) {
+            profileImageUrl =
+              "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            console.log("Dashboard: Using default profile image");
+          }
+
+          // Set the profile images
+          setProfileImages(profileImageUrl);
+
+          // Display other rider info
+          if (riderData.firstName && riderData.lastName) {
+            const fullName = `${riderData.firstName} ${riderData.lastName}`;
+            document.getElementById("sidebar-profile-name").textContent =
+              fullName;
+            document.getElementById("full-name").textContent = fullName;
+          }
+
+          if (riderData.email) {
+            document.getElementById("sidebar-profile-email").textContent =
+              riderData.email;
+            document.getElementById("profile-email").textContent =
+              riderData.email;
+          }
+
+          if (riderData.contactNumber) {
+            document.getElementById("phone-number").textContent =
+              riderData.contactNumber;
+          }
+
+          if (riderData.address) {
+            document.getElementById("profile-address").textContent =
+              riderData.address;
+          }
+
+          if (riderData.registrationDate) {
+            const regDate = new Date(
+              parseInt(riderData.registrationDate) * 1000
+            );
+            if (!isNaN(regDate.getTime())) {
+              const formattedDate = regDate.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+              document.getElementById("registration-date").textContent =
+                formattedDate;
+              document.getElementById("member-since").textContent =
+                regDate.getFullYear();
+            }
+          }
+
+          if (riderData.walletAddress) {
+            const riderId = `RIDER-${riderData.walletAddress
+              .substring(2, 8)
+              .toUpperCase()}`;
+            document.getElementById("rider-id").textContent = riderId;
+            document.getElementById("wallet-address").textContent =
+              riderData.walletAddress;
+            document.getElementById("wallet-address").style.display = "block";
+            document.getElementById(
+              "wallet-address-display"
+            ).textContent = `Wallet: ${riderData.walletAddress.substring(
+              0,
+              6
+            )}...${riderData.walletAddress.substring(
+              riderData.walletAddress.length - 4
+            )}`;
+          }
+        }
+
+        // Helper function to set both profile images
+        function setProfileImages(src) {
+          const images = [
+            document.getElementById("sidebar-profile-img"),
+            document.getElementById("profile-img-large"),
+          ];
+
+          images.forEach((img) => {
+            if (img) {
+              // Create new image to test load
+              const testImg = new Image();
+              testImg.onload = () => {
+                img.src = src;
+                img.classList.add("animate-pop");
+                setTimeout(() => img.classList.remove("animate-pop"), 400);
+              };
+              testImg.onerror = () => {
+                img.src =
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+              };
+              testImg.src = src;
+            }
+          });
+        }
+
+        // Initialize blockchain connection
+        async function initializeBlockchain() {
+          try {
+            if (typeof window.ethereum === "undefined") {
+              throw new Error("MetaMask not detected");
+            }
+
+            const accounts = await window.ethereum.request({
+              method: "eth_requestAccounts",
+            });
+            if (accounts.length === 0) {
+              throw new Error("No accounts available");
+            }
+
+            // Update wallet address in session storage
+            const riderData =
+              JSON.parse(sessionStorage.getItem("currentRider")) || {};
+            riderData.walletAddress = accounts[0];
+            sessionStorage.setItem("currentRider", JSON.stringify(riderData));
+
+            // Update UI with wallet address
+            document.getElementById("wallet-address").textContent = accounts[0];
+            document.getElementById("wallet-address").style.display = "block";
+            document.getElementById(
+              "wallet-address-display"
+            ).textContent = `Wallet: ${accounts[0].substring(
+              0,
+              6
+            )}...${accounts[0].substring(accounts[0].length - 4)}`;
+
+            return true;
+          } catch (error) {
+            console.error("Blockchain initialization error:", error);
+            return false;
+          }
+        }
+
+        // Tab switching functionality
+        function setupTabSwitching() {
+          const navLinks = document.querySelectorAll(".nav-link");
+          const tabContents = document.querySelectorAll(".tab-content");
+          const pageTitle = document.getElementById("page-title");
+
+          navLinks.forEach((link) => {
+            link.addEventListener("click", function (e) {
+              e.preventDefault();
+
+              // Remove active class from all links and tabs
+              navLinks.forEach((navLink) => navLink.classList.remove("active"));
+              tabContents.forEach((tab) => tab.classList.remove("active"));
+
+              // Add active class to clicked link
+              this.classList.add("active");
+
+              // Show corresponding tab
+              const tabId = this.getAttribute("data-tab") + "-tab";
+              document.getElementById(tabId).classList.add("active");
+
+              // Update page title
+              const tabName = this.querySelector("span").textContent;
+              pageTitle.textContent = `${tabName} | Neon Rider`;
+            });
+          });
+        }
+
+        // Load rides data
+        async function loadRidesData() {
+          try {
+            // Check if table body exists
+            const tableBody = document.getElementById("rides-table-body");
+            if (!tableBody) {
+              console.error("Rides table body not found");
+              return;
+            }
+
+            // Show loading state
+            tableBody.innerHTML =
+              '<tr><td colspan="5" style="text-align: center;">Loading rides...</td></tr>';
+
+            // Fetch rides data
+            const response = await fetchRidesData();
+
+            // Clear loading state
+            tableBody.innerHTML = "";
+
+            // Populate table
+            response.forEach((ride) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td data-label="Ride ID">${ride.id}</td>
+                <td data-label="Date">${ride.date}</td>
+                <td data-label="Distance">${ride.distance} miles</td>
+                <td data-label="Price">$${ride.price}</td>
+                <td data-label="Status"><span class="ride-status ${getStatusClass(
+                  ride.status
+                )}">${ride.status}</span></td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } catch (error) {
+            console.error("Error loading rides data:", error);
+            const tableBody = document.getElementById("rides-table-body");
+            if (tableBody) {
+              tableBody.innerHTML =
+                '<tr><td colspan="5" style="text-align: center; color: var(--danger)">Error loading rides data</td></tr>';
+            }
+          }
+        }
+
+        function cleanupLocalStorage() {
+          try {
+            const allCids = JSON.parse(
+              localStorage.getItem("ipfsRideCIDs") || "[]"
+            );
+
+            // Keep only the 20 most recent rides
+            const recentCids = allCids.slice(-20);
+
+            // Remove old entries
+            allCids.forEach((cid) => {
+              if (!recentCids.includes(cid)) {
+                localStorage.removeItem(`ipfsRide_${cid}`);
+              }
+            });
+
+            localStorage.setItem("ipfsRideCIDs", JSON.stringify(recentCids));
+          } catch (error) {
+            console.error("Error cleaning localStorage:", error);
+          }
+        }
+
+        // 2. Then add the fix function
+        function fixBrokenLocalStorage() {
+          try {
+            const cids = JSON.parse(
+              localStorage.getItem("ipfsRideCIDs") || "[]"
+            );
+            const fixedCids = [];
+
+            for (const cid of cids) {
+              try {
+                const item = localStorage.getItem(`ipfsRide_${cid}`);
+                if (item && JSON.parse(item).requestId) {
+                  fixedCids.push(cid);
+                }
+              } catch (e) {
+                localStorage.removeItem(`ipfsRide_${cid}`);
+              }
+            }
+
+            localStorage.setItem("ipfsRideCIDs", JSON.stringify(fixedCids));
+          } catch (error) {
+            console.error("Error fixing localStorage:", error);
+            localStorage.removeItem("ipfsRideCIDs");
+          }
+        }
+
+        // Load history data with enhanced IPFS support
+        async function loadHistoryData() {
+          try {
+            // Check if table body exists
+            const tableBody = document.getElementById("history-table-body");
+            if (!tableBody) {
+              console.error("History table body not found");
+              return;
+            }
+
+            // Show loading state
+            tableBody.innerHTML =
+              '<tr><td colspan="8" style="text-align: center;">Loading ride history...</td></tr>';
+
+            // Fetch history data
+            const response = await fetchHistoryData();
+
+            // Clear loading state
+            tableBody.innerHTML = "";
+
+            // Populate table
+            response.forEach((history) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+        <td data-label="Ride ID">${history.id}</td>
+        <td data-label="Date">${history.date}</td>
+        <td data-label="From">${history.from}</td>
+        <td data-label="To">${history.to}</td>
+        <td data-label="Driver">${history.driver || "Unknown"}</td>
+        <td data-label="Vehicle"><span class="vehicle-badge">${
+          history.vehicle || "Unknown"
+        }</span></td>
+        <td data-label="Amount">$${Number(history.amount || 0).toFixed(2)}</td>
+        <td data-label="Status"><span class="ride-status ${getStatusClass(
+          history.status
+        )}">${history.status}</span></td>
+      `;
+              tableBody.appendChild(row);
+            });
+          } catch (error) {
+            console.error("Error loading history data:", error);
+            const tableBody = document.getElementById("history-table-body");
+            if (tableBody) {
+              tableBody.innerHTML =
+                '<tr><td colspan="8" style="text-align: center; color: var(--danger)">Error loading history data</td></tr>';
+            }
+          }
+        }
+        // Load wallet data
+        async function loadWalletData() {
+          try {
+            // Check if table body exists
+            const tableBody = document.getElementById(
+              "transaction-history-body"
+            );
+            if (!tableBody) {
+              console.error("Transaction history table body not found");
+              return;
+            }
+
+            // Show loading state
+            tableBody.innerHTML =
+              '<tr><td colspan="4" style="text-align: center;">Loading transactions...</td></tr>';
+
+            // Fetch wallet data
+            const response = await fetchWalletData();
+
+            // Update balance
+            const walletBalance = document.getElementById("wallet-balance");
+            if (walletBalance) {
+              walletBalance.textContent = `$${response.balance.toFixed(2)}`;
+            }
+
+            // Clear loading state
+            tableBody.innerHTML = "";
+
+            // Populate table
+            response.transactions.forEach((transaction) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td data-label="Date">${transaction.date}</td>
+                <td data-label="Description">${transaction.description}</td>
+                <td data-label="Amount">${
+                  transaction.amount >= 0 ? "+" : ""
+                }$${Math.abs(transaction.amount).toFixed(2)}</td>
+                <td data-label="Status"><span class="ride-status ${getStatusClass(
+                  transaction.status
+                )}">${transaction.status}</span></td>
+              `;
+              tableBody.appendChild(row);
+            });
+          } catch (error) {
+            console.error("Error loading wallet data:", error);
+            const tableBody = document.getElementById(
+              "transaction-history-body"
+            );
+            if (tableBody) {
+              tableBody.innerHTML =
+                '<tr><td colspan="4" style="text-align: center; color: var(--danger)">Error loading transactions</td></tr>';
+            }
+          }
+        }
+
+        // Helper function to get status class
+        function getStatusClass(status) {
+          switch (status.toLowerCase()) {
+            case "completed":
+              return "status-completed";
+            case "cancelled":
+              return "status-cancelled";
+            case "pending":
+              return "status-pending";
+            default:
+              return "";
+          }
+        }
+
+        // Format date helper function
+        function formatDate(isoString) {
+          const date = new Date(isoString);
+          const now = new Date();
+
+          if (date.toDateString() === now.toDateString()) {
+            return `Today, ${date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}`;
+          }
+
+          const yesterday = new Date(now);
+          yesterday.setDate(yesterday.getDate() - 1);
+          if (date.toDateString() === yesterday.toDateString()) {
+            return `Yesterday, ${date.toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}`;
+          }
+
+          return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+        }
+
+        // Fetch rides data (mock)
+        async function fetchRidesData() {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve([
+                {
+                  id: "RIDE-127",
+                  date: "Today, 3:45 PM",
+                  distance: 5.2,
+                  price: 12.5,
+                  status: "Completed",
+                },
+                {
+                  id: "RIDE-126",
+                  date: "Yesterday, 2:30 PM",
+                  distance: 3.8,
+                  price: 9.75,
+                  status: "Completed",
+                },
+                {
+                  id: "RIDE-125",
+                  date: "Yesterday, 10:15 AM",
+                  distance: 7.5,
+                  price: 18.2,
+                  status: "Completed",
+                },
+                {
+                  id: "RIDE-124",
+                  date: "2 days ago, 5:20 PM",
+                  distance: 2.3,
+                  price: 6.5,
+                  status: "Cancelled",
+                },
+                {
+                  id: "RIDE-123",
+                  date: "3 days ago, 8:45 AM",
+                  distance: 4.7,
+                  price: 11.8,
+                  status: "Completed",
+                },
+              ]);
+            }, 500);
+          });
+        }
+
+        // Main function to fetch and display ride history
+        async function fetchHistoryData() {
+          console.log("[History] Starting data fetch...");
+
+          try {
+            // 1. First try cached data
+            const cachedData = getCachedRideHistory();
+            if (cachedData.length > 0) {
+              console.log(`[History] Found ${cachedData.length} cached rides`);
+              return cachedData;
+            }
+
+            // 2. Try IPFS as fallback
+            console.log("[History] Fetching from IPFS...");
+            const ipfsData = await fetchRideDataFromIPFS();
+            if (ipfsData.length > 0) {
+              console.log(`[History] Found ${ipfsData.length} rides from IPFS`);
+              return ipfsData;
+            }
+
+            // 3. Final fallback to mock data
+            console.log("[History] Using mock data");
+            return generateMockHistoryData();
+          } catch (error) {
+            console.error("[History] Error:", error);
+            return generateMockHistoryData();
+          }
+        }
+        // Get cached ride history from localStorage
+        function getCachedRideHistory() {
+          try {
+            const cids = JSON.parse(
+              localStorage.getItem("ipfsRideCIDs") || "[]"
+            );
+            const rides = [];
+
+            for (const cid of cids) {
+              try {
+                const rideJson = localStorage.getItem(`ipfsRide_${cid}`);
+                if (rideJson) {
+                  const rideData = JSON.parse(rideJson);
+                  if (isValidRideData(rideData)) {
+                    rides.push(rideData);
+                  }
+                }
+              } catch (e) {
+                console.error(`[Cache] Error parsing ride ${cid}:`, e);
+              }
+            }
+
+            return processRideData(rides);
+          } catch (error) {
+            console.error("[Cache] Error accessing localStorage:", error);
+            return [];
+          }
+        }
+
+        // Fetch ride data from IPFS
+        async function fetchRideDataFromIPFS() {
+  try {
+    const cids = JSON.parse(localStorage.getItem('ipfsRideCIDs')) || [];
+    const ipfsData = [];
+    
+    for (const cid of cids) {
+      try {
+        const cached = localStorage.getItem(`ipfsRide_${cid}`);
+        const cachedData = cached ? JSON.parse(cached) : null;
+        
+        // Skip if we have complete data
+        if (cachedData?.route?.pickup && cachedData?.route?.destination) {
+          ipfsData.push(cachedData);
+          continue;
+        }
+        
+        // Only fetch from IPFS if we're missing critical data
+        const formData = new FormData();
+        formData.append('arg', cid);
+        
+        const response = await fetch('http://127.0.0.1:5001/api/v0/cat', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) continue;
+        
+        const data = await response.json();
+        if (!isValidRideData(data)) continue;
+        
+        // Store whatever we can, even if partial
+        try {
+          localStorage.setItem(`ipfsRide_${cid}`, JSON.stringify(data));
+        } catch (e) {
+          console.warn(`Couldn't cache ${cid}`, e);
+        }
+        
+        ipfsData.push(data);
+      } catch (error) {
+        console.error(`Error processing CID ${cid}:`, error);
+      }
+    }
+    
+    return ipfsData;
+  } catch (error) {
+    console.error("IPFS fetch error:", error);
+    return [];
+  }
+}
+
+        // Process raw ride data into display format
+        function processRideData(rides) {
+          return rides
+            .filter((ride) => isValidRideData(ride))
+            .map((ride) => {
+              // Robust fare amount handling
+              let fareAmount = 0;
+              try {
+                if (
+                  typeof ride.fare === "object" &&
+                  ride.fare.amount !== undefined
+                ) {
+                  fareAmount =
+                    typeof ride.fare.amount === "number"
+                      ? ride.fare.amount
+                      : parseFloat(
+                          ride.fare.amount.toString().replace(/[^\d.-]/g, "")
+                        ) || 0;
+                } else if (typeof ride.fare === "string") {
+                  fareAmount =
+                    parseFloat(ride.fare.replace(/[^\d.-]/g, "")) || 0;
+                }
+              } catch (e) {
+                console.warn("Error processing fare:", e);
+              }
+
+              return {
+                id: formatRideId(ride.requestId),
+                date: formatDate(ride.timestamp),
+                from: ride.route?.pickup || "Unknown Location",
+                to: ride.route?.destination || "Unknown Destination",
+                driver: ride.driver?.name || "Unknown Driver",
+                vehicle: ride.vehicle?.type || "Standard Vehicle",
+                amount: `PKR ${fareAmount.toFixed(2)}`,
+                status: ride.status || "Completed",
+                timestamp: ride.timestamp,
+                cid: ride.cid,
+              };
+            })
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        }
+
+        // Cache processed ride data
+        function cacheRideData(rides) {
+          try {
+            const cids = rides.map((ride) => ride.cid).filter(Boolean);
+            localStorage.setItem("ipfsRideCIDs", JSON.stringify(cids));
+          } catch (error) {
+            console.error("[Cache] Error saving CIDs:", error);
+          }
+        }
+
+        function cleanLocalStorage() {
+          try {
+            const cids = JSON.parse(
+              localStorage.getItem("ipfsRideCIDs") || "[]"
+            );
+
+            // Remove any invalid entries
+            const validCids = [];
+            for (const cid of cids) {
+              try {
+                const data = localStorage.getItem(`ipfsRide_${cid}`);
+                if (data && isValidRideData(JSON.parse(data))) {
+                  validCids.push(cid);
+                }
+              } catch (e) {
+                localStorage.removeItem(`ipfsRide_${cid}`);
+              }
+            }
+
+            // Keep only the 50 most recent rides
+            const recentCids = validCids.slice(-50);
+            localStorage.setItem("ipfsRideCIDs", JSON.stringify(recentCids));
+          } catch (error) {
+            console.error("Error cleaning localStorage:", error);
+          }
+        }
+
+        // Call this during initialization
+        cleanLocalStorage();
+
+        // Helper function to validate ride data structure
+        function isValidRideData(data) {
+          if (!data || typeof data !== "object") return false;
+
+          // Check required fields
+          const hasRequiredFields =
+            data.type === "ride-confirmation" &&
+            data.requestId &&
+            data.timestamp &&
+            data.route?.pickup &&
+            data.route?.destination;
+
+          // Validate fare structure (either object with amount or direct amount)
+          const hasValidFare =
+            (data.fare &&
+              (typeof data.fare.amount !== "undefined" ||
+                typeof data.fare !== "object")) ||
+            typeof data.amount !== "undefined";
+
+          return hasRequiredFields && hasValidFare;
+        }
+
+        // Helper function with timeout
+        async function fetchWithTimeout(resource, options = {}) {
+          const { timeout = 8000 } = options;
+          const controller = new AbortController();
+          const id = setTimeout(() => controller.abort(), timeout);
+
+          const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal,
+          });
+
+          clearTimeout(id);
+          return response;
+        }
+
+        // Format ride ID for display
+        function formatRideId(requestId) {
+          return `RIDE-${(requestId || "")
+            .toString()
+            .substring(0, 8)
+            .toUpperCase()}`;
+        }
+
+        // Format fare amount
+        function formatFare(amount) {
+          return amount ? `PKR ${amount}` : "PKR 0";
+        }
+
+        // Format date for display
+        function formatDate(isoString) {
+          try {
+            const date = new Date(isoString);
+            return date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          } catch (e) {
+            console.error("Error formatting date:", e);
+            return "Unknown date";
+          }
+        }
+
+        // UI Update Functions
+        function updateHistoryTable(rides) {
+          const tableBody = document.getElementById("history-table-body");
+          if (!tableBody) return;
+
+          if (rides.length === 0) {
+            showEmptyState();
+            return;
+          }
+
+          tableBody.innerHTML = rides
+            .map(
+              (ride) => `
+    <tr data-ride-id="${ride.id}" data-cid="${ride.cid || ""}">
+      <td>${ride.id}</td>
+      <td>${ride.date}</td>
+      <td>${ride.from}</td>
+      <td>${ride.to}</td>
+      <td>${ride.driver}</td>
+      <td>${ride.vehicle}</td>
+      <td>${ride.amount}</td>
+      <td><span class="status-badge completed">${ride.status}</span></td>
+    </tr>
+  `
+            )
+            .join("");
+        }
+
+        function showLoadingState() {
+          const tableBody = document.getElementById("history-table-body");
+          if (tableBody) {
+            tableBody.innerHTML = `
+      <tr class="loading-row">
+        <td colspan="8">
+          <div class="loading-spinner"></div>
+          <span>Loading ride history...</span>
+        </td>
+      </tr>
+    `;
+          }
+        }
+
+        function showEmptyState() {
+          const tableBody = document.getElementById("history-table-body");
+          if (tableBody) {
+            tableBody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="8">
+          <i class="fas fa-history"></i>
+          <span>No ride history found</span>
+        </td>
+      </tr>
+    `;
+          }
+        }
+
+        function showErrorState() {
+          const tableBody = document.getElementById("history-table-body");
+          if (tableBody) {
+            tableBody.innerHTML = `
+      <tr class="error-row">
+        <td colspan="8">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>Error loading history</span>
+        </td>
+      </tr>
+    `;
+          }
+        }
+
+        // Generate mock data when IPFS/localStorage fails
+        function generateMockHistoryData() {
+          const mockRides = [];
+          const locations = [
+            "Main Street",
+            "Central Park",
+            "Airport",
+            "Downtown",
+          ];
+          const drivers = [
+            "Ali Khan",
+            "Fatima Ahmed",
+            "Usman Malik",
+            "Ayesha Hassan",
+          ];
+          const vehicles = ["Economy", "Premium", "SUV", "Luxury"];
+
+          for (let i = 0; i < 4; i++) {
+            const daysAgo = i * 2;
+            mockRides.push({
+              id: `RIDE-M${100 + i}`,
+              date: formatDate(
+                new Date(Date.now() - daysAgo * 86400000).toISOString()
+              ),
+              from: locations[i % locations.length],
+              to: locations[(i + 2) % locations.length],
+              driver: drivers[i % drivers.length],
+              vehicle: vehicles[i % vehicles.length],
+              amount: `PKR ${(15 + i * 5).toFixed(2)}`,
+              status: "Completed",
+              timestamp: new Date(
+                Date.now() - daysAgo * 86400000
+              ).toISOString(),
+            });
+          }
+
+          return mockRides;
+        }
+
+        // Initialize history when tab is shown
+        function initHistory() {
+          const historyTab = document.getElementById("history-tab");
+          const refreshBtn = document.getElementById("refresh-history");
+
+          if (historyTab) {
+            historyTab.addEventListener("click", fetchHistoryData);
+
+            // Load immediately if active tab
+            if (historyTab.classList.contains("active")) {
+              fetchHistoryData();
+            }
+          }
+
+          if (refreshBtn) {
+            refreshBtn.addEventListener("click", async () => {
+              refreshBtn.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i> Refreshing';
+              await fetchHistoryData();
+              refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+            });
+          }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener("DOMContentLoaded", initHistory);
+        // Fetch wallet data (mock)
+        async function fetchWalletData() {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              resolve({
+                balance: 1245.75,
+                transactions: [
+                  {
+                    date: "Today, 3:50 PM",
+                    description: "Ride payment received",
+                    amount: 12.5,
+                    status: "Completed",
+                  },
+                  {
+                    date: "Yesterday, 2:35 PM",
+                    description: "Ride payment received",
+                    amount: 9.75,
+                    status: "Completed",
+                  },
+                  {
+                    date: "Yesterday, 10:20 AM",
+                    description: "Ride payment received",
+                    amount: 18.2,
+                    status: "Completed",
+                  },
+                  {
+                    date: "2 days ago, 5:25 PM",
+                    description: "Ride refund",
+                    amount: -6.5,
+                    status: "Completed",
+                  },
+                  {
+                    date: "3 days ago, 8:50 AM",
+                    description: "Ride payment received",
+                    amount: 11.8,
+                    status: "Completed",
+                  },
+                ],
+              });
+            }, 500);
+          });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+          // Logout button
+          const logoutBtn = document
+            .querySelector(".btn-icon .fa-sign-out-alt")
+            ?.closest(".btn");
+          if (logoutBtn) {
+            logoutBtn.addEventListener("click", function () {
+              // Clean up any blob URLs
+              const riderData = JSON.parse(
+                sessionStorage.getItem("currentRider")
+              );
+              if (riderData && riderData.profilePicUrl) {
+                try {
+                  URL.revokeObjectURL(riderData.profilePicUrl);
+                } catch (e) {
+                  console.error("Error revoking blob URL:", e);
+                }
+              }
+
+              sessionStorage.removeItem("currentRider");
+              sessionStorage.removeItem("rideRequestData");
+              window.location.href = "riderLogin.html";
+            });
+          }
+
+          // Request ride button
+          const requestRideBtn = document.getElementById("request-ride-btn");
+          if (requestRideBtn) {
+            requestRideBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+
+              // Get rider data
+              const riderData = JSON.parse(
+                sessionStorage.getItem("currentRider")
+              );
+
+              // Prepare data to send
+              const rideRequestData = {
+                riderName: `${riderData.firstName} ${riderData.lastName}`,
+                riderPhone: riderData.contactNumber,
+                riderProfilePic:
+                  riderData.profilePicUrl ||
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                walletAddress: riderData.walletAddress,
+              };
+
+              // Store in session storage
+              sessionStorage.setItem(
+                "rideRequestData",
+                JSON.stringify(rideRequestData)
+              );
+
+              // Open in new tab
+              window.open("/rider.html", "_blank");
+            });
+          }
+
+          // Request shared ride button
+          const requestSharedRideBtn = document.getElementById(
+            "request-shared-ride-btn"
+          );
+          if (requestSharedRideBtn) {
+            requestSharedRideBtn.addEventListener("click", function (e) {
+              e.preventDefault();
+
+              // Get rider data
+              const riderData = JSON.parse(
+                sessionStorage.getItem("currentRider")
+              );
+
+              // Prepare data to send
+              const rideRequestData = {
+                riderName: `${riderData.firstName} ${riderData.lastName}`,
+                riderPhone: riderData.contactNumber,
+                riderProfilePic:
+                  riderData.profilePicUrl ||
+                  "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                walletAddress: riderData.walletAddress,
+              };
+
+              // Store in session storage
+              sessionStorage.setItem(
+                "rideRequestData",
+                JSON.stringify(rideRequestData)
+              );
+
+              // Open in new tab
+              window.open("http://localhost:5501/shareRide.html", "_blank");
+            });
+          }
+
+          // Refresh buttons
+          document
+            .getElementById("refresh-rides")
+            ?.addEventListener("click", loadRidesData);
+          document
+            .getElementById("refresh-history")
+            ?.addEventListener("click", loadHistoryData);
+          document
+            .getElementById("refresh-wallet")
+            ?.addEventListener("click", loadWalletData);
+
+          // Save settings button
+          document
+            .getElementById("save-settings")
+            ?.addEventListener("click", function () {
+              alert("Settings saved successfully!");
+            });
+
+          // Contact support button
+          document
+            .getElementById("contact-support")
+            ?.addEventListener("click", function () {
+              window.location.href = "mailto:support@neonrider.com";
+            });
+
+          // Wallet address click to copy
+          const walletAddressElement =
+            document.getElementById("wallet-address");
+          if (walletAddressElement) {
+            walletAddressElement.addEventListener("click", function () {
+              const walletAddress = this.textContent;
+              navigator.clipboard
+                .writeText(walletAddress)
+                .then(() => {
+                  const originalText = this.textContent;
+                  this.textContent = "Copied to clipboard!";
+                  setTimeout(() => {
+                    this.textContent = originalText;
+                  }, 2000);
+                })
+                .catch((err) => {
+                  console.error("Failed to copy wallet address:", err);
+                });
+            });
+          }
+
+          // Handle wallet changes
+          if (typeof window.ethereum !== "undefined") {
+            window.ethereum.on("accountsChanged", (accounts) => {
+              if (accounts.length === 0) {
+                // Wallet disconnected
+                sessionStorage.removeItem("currentRider");
+                sessionStorage.removeItem("rideRequestData");
+                window.location.href = "index.html";
+              } else {
+                // Wallet changed - update the address
+                const riderData =
+                  JSON.parse(sessionStorage.getItem("currentRider")) || {};
+                riderData.walletAddress = accounts[0];
+                sessionStorage.setItem(
+                  "currentRider",
+                  JSON.stringify(riderData)
+                );
+
+                // Update UI with wallet address
+                if (walletAddressElement) {
+                  walletAddressElement.textContent = accounts[0];
+                }
+
+                // Update rider ID
+                const riderId = `RIDER-${accounts[0]
+                  .substring(2, 8)
+                  .toUpperCase()}`;
+                const riderIdElement = document.getElementById("rider-id");
+                if (riderIdElement) {
+                  riderIdElement.textContent = riderId;
+                }
+
+                // Update wallet display
+                const walletDisplay = document.getElementById(
+                  "wallet-address-display"
+                );
+                if (walletDisplay) {
+                  walletDisplay.textContent = `Wallet: ${accounts[0].substring(
+                    0,
+                    6
+                  )}...${accounts[0].substring(accounts[0].length - 4)}`;
+                }
+              }
+            });
+          }
+        }
+
+        // Initialize the page
+        await displayRiderData(riderData);
+        await initializeBlockchain();
+        setupTabSwitching();
+        setupEventListeners();
+
+        // Load initial data for tabs
+        loadRidesData();
+        loadHistoryData();
+        loadWalletData();
+      });
+    </script>
+    <script type="module" src="/libp2p/rider.js"></script>
+  </body>
+</html>

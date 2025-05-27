@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Driver Dashboard</title>
+
+    <!-- Add these to your <head> section -->
+<script src="https://unpkg.com/libp2p/dist/index.min.js"></script>
+<script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
+<script src="https://unpkg.com/libp2p-websockets/dist/index.min.js"></script>
+<script src="https://unpkg.com/@chainsafe/libp2p-noise/dist/index.min.js"></script>
+<script src="https://unpkg.com/libp2p-mplex/dist/index.min.js"></script>
+<script src="https://unpkg.com/libp2p-bootstrap/dist/index.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        /* New Color Scheme */
+        --primary: #4361ee;
+        --primary-light: rgba(67, 97, 238, 0.1);
+        --secondary: #f72585;
+        --accent: #4cc9f0;
+        --dark: #0c0d13;
+        --dark-light: #1a1b26;
+        --light: #f8f9fa;
+        --success: #2ec4b6;
+        --warning: #ff9f1c;
+        --danger: #e71d36;
+        --border-radius: 12px;
+        --border-radius-sm: 8px;
+        --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--dark);
+        color: var(--light);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+      }
+
+      /* Main Layout */
+      .dashboard {
+        display: flex;
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Map Section - Optimized */
+      .map-section {
+        flex: 1;
+        height: 100%;
+        position: relative;
+        transition: var(--transition);
+        z-index: 1;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+        background-color: var(--dark-light);
+      }
+
+      /* Ride Management Section */
+      .ride-section {
+        width: 380px;
+        height: 100%;
+        background: rgb(67 66 39 / 95%);
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        border-left: 1px solid rgba(255, 255, 255, 0.08);
+        transition: var(--transition);
+        overflow: hidden;
+      }
+
+      /* List Headers - Professional Design */
+      .list-header {
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(26, 27, 38, 0.9);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        z-index: 2;
+        border-bottom-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        border-bottom-color: aqua;
+        border-bottom: 2px solid #aea2f1;
+      }
+
+      .list-header h2 {
+        font-size: 1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--light);
+      }
+
+      .list-header .badge {
+        background: var(--primary);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        min-width: 24px;
+        text-align: center;
+      }
+
+      .list-header .icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67, 97, 238, 0.15);
+        border-radius: 8px;
+        color: var(--primary);
+        font-size: 0.9rem;
+      }
+
+      /* Ride Lists Container */
+      .ride-lists {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .ride-list {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .rides-container {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) transparent;
+      }
+
+      .rides-container::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .rides-container::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 3px;
+      }
+
+      .rides-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      /* Professional Ride Cards */
+      .ride-card {
+        background: rgba(26, 27, 38, 0.7);
+        border-radius: var(--border-radius);
+        padding: 16px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: var(--box-shadow);
+      }
+
+      .ride-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--primary);
+      }
+
+      .ride-card.accepted::before {
+        background: var(--success);
+      }
+
+      .ride-card.incoming::before {
+        background: var(--warning);
+      }
+
+      .ride-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        background: rgba(26, 27, 38, 0.9);
+      }
+
+      .ride-card-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        align-items: center;
+      }
+
+      .ride-card-title {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--light);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .ride-card-title .vehicle-icon {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67, 97, 238, 0.15);
+        border-radius: 6px;
+        color: var(--primary);
+        font-size: 0.8rem;
+      }
+
+      .ride-card.accepted .vehicle-icon {
+        background: rgba(46, 196, 182, 0.15);
+        color: var(--success);
+      }
+
+      .ride-card.incoming .vehicle-icon {
+        background: rgba(255, 159, 28, 0.15);
+        color: var(--warning);
+      }
+
+      .ride-card-time {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.08);
+        padding: 4px 8px;
+        border-radius: var(--border-radius-sm);
+      }
+
+      .ride-card-body {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .rider-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid rgba(67, 97, 238, 0.3);
+        flex-shrink: 0;
+      }
+
+      .ride-card.accepted .rider-avatar {
+        border-color: rgba(46, 196, 182, 0.3);
+      }
+
+      .ride-card.incoming .rider-avatar {
+        border-color: rgba(255, 159, 28, 0.3);
+      }
+
+      .ride-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .rider-name {
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--light);
+      }
+
+      .ride-location {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .ride-location i {
+        font-size: 0.7rem;
+        color: var(--primary);
+      }
+
+      .ride-card.accepted .ride-location i {
+        color: var(--success);
+      }
+
+      .ride-card.incoming .ride-location i {
+        color: var(--warning);
+      }
+
+      .ride-fare {
+        font-weight: 700;
+        color: var(--primary);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .ride-card.accepted .ride-fare {
+        color: var(--success);
+      }
+
+      .ride-card.incoming .ride-fare {
+        color: var(--warning);
+      }
+
+      .ride-distance {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* Expanded Card - Professional Design */
+      .expanded-view {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--transition);
+      }
+
+      .expanded-view.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .expanded-card {
+        background: rgba(26, 27, 38, 0.95);
+        width: 90%;
+        max-width: 480px;
+        border-radius: var(--border-radius);
+        padding: 0;
+        transform: translateY(20px) scale(0.98);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(67, 97, 238, 0.15);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      }
+
+      .expanded-view.active .expanded-card {
+        transform: translateY(0) scale(1);
+      }
+
+      .expanded-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        position: relative;
+      }
+
+      .close-expanded {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        transition: var(--transition);
+      }
+
+      .close-expanded:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+      }
+
+      .rider-profile {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .expanded-avatar {
+        width: 72px;
+        height: 72px;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 3px solid var(--primary);
+        flex-shrink: 0;
+      }
+
+      .accepted .expanded-avatar {
+        border-color: var(--success);
+      }
+
+      .incoming .expanded-avatar {
+        border-color: var(--warning);
+      }
+
+      .rider-details h3 {
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+        color: var(--light);
+      }
+
+      .rider-details p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .expanded-content {
+        padding: 20px;
+      }
+
+      .ride-meta {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .meta-item {
+        background: rgba(38, 39, 54, 0.7);
+        border-radius: var(--border-radius-sm);
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .meta-label {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .meta-value {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--light);
+      }
+
+      .meta-value.fare {
+        color: var(--primary);
+        font-size: 1.1rem;
+      }
+
+      .accepted .meta-value.fare {
+        color: var(--success);
+      }
+
+      .incoming .meta-value.fare {
+        color: var(--warning);
+      }
+
+      .location-section {
+        margin-bottom: 20px;
+      }
+
+      .location-card {
+        background: rgba(38, 39, 54, 0.7);
+        border-radius: var(--border-radius-sm);
+        padding: 14px;
+        margin-bottom: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .location-card h4 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        color: var(--light);
+      }
+
+      .location-card h4 i {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67, 97, 238, 0.15);
+        border-radius: 6px;
+        color: var(--primary);
+        font-size: 0.8rem;
+      }
+
+      .accepted .location-card h4 i {
+        background: rgba(46, 196, 182, 0.15);
+        color: var(--success);
+      }
+
+      .incoming .location-card h4 i {
+        background: rgba(255, 159, 28, 0.15);
+        color: var(--warning);
+      }
+
+      .location-card p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.85rem;
+        line-height: 1.5;
+      }
+
+      .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 12px;
+        border-radius: var(--border-radius-sm);
+        border: none;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #3a56d4;
+        transform: translateY(-2px);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #28a99e;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #d11a2f;
+        transform: translateY(-2px);
+      }
+
+      /* Responsive Design - Optimized for all screens */
+      @media (max-width: 1200px) {
+        .ride-section {
+          width: 350px;
+        }
+      }
+
+      /* Tablet Layout (768px and below) */
+      @media (max-width: 768px) {
+        .dashboard {
+          flex-direction: column;
+        }
+
+        .map-section {
+          height: 55vh;
+        }
+
+        .ride-section {
+          width: 100%;
+          height: 45vh;
+        }
+
+        .ride-lists {
+          flex-direction: row;
+          height: 100%;
+        }
+
+        .ride-list {
+          width: 50%;
+          height: 100%;
+        }
+
+        .rides-container {
+          padding: 12px;
+        }
+
+        .ride-card {
+          padding: 14px;
+        }
+
+        .expanded-card {
+          width: 95%;
+          max-width: 420px;
+        }
+
+        .expanded-header,
+        .expanded-content {
+          padding: 16px;
+        }
+      }
+
+      /* Mobile Layout (480px and below) */
+      @media (max-width: 480px) {
+        .map-section {
+          height: 50vh;
+        }
+
+        .ride-section {
+          height: 50vh;
+        }
+
+        .ride-lists {
+          flex-direction: column;
+        }
+
+        .ride-list {
+          width: 100%;
+          height: 50%;
+        }
+
+        .list-header {
+          padding: 14px 16px;
+        }
+
+        .ride-card {
+          padding: 12px;
+          margin-bottom: 10px;
+        }
+
+        .ride-meta {
+          grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+          grid-template-columns: 1fr;
+        }
+
+        .rider-profile {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .rider-details {
+          text-align: center;
+        }
+      }
+
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.95);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        text-align: center;
+        max-width: 350px;
+        width: 90%;
+        display: none;
+      }
+
+      .popup.active {
+        display: block;
+      }
+
+      .popup-content h3 {
+        margin: 0 0 15px 0;
+        color: #333;
+      }
+
+      .popup-content p {
+        margin: 0 0 20px 0;
+        color: #555;
+      }
+
+      .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+        margin: 20px auto;
+      }
+
+      .fare-amount {
+        font-size: 24px;
+        font-weight: bold;
+        color: #2ecc71;
+        margin-top: 15px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/libp2p/dist/libp2p.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/peer-id/dist/peer-id.min.js"></script>
+    <script>
+      // Global variables
+      let map;
+      let acceptedRides = [];
+      let incomingRides = [];
+      let driverMarker;
+      let riderMarker;
+      let destinationMarker;
+      let driverToRiderPolyline;
+      let directionsRenderer;
+      let driverLocationWatchId = null;
+      let currentDriverLocation = null;
+      let libp2pNode = null;
+
+      // Initialize libp2p node
+      async function initLibp2p() {
+  try {
+    // Check if libp2p is available
+    if (!window.Libp2p || !window.PeerId) {
+      console.error("Libp2p dependencies not loaded");
+      return null;
+    }
+
+    // Create peer ID
+    const peerId = await window.PeerId.create({
+      bits: 2048,
+      keyType: "RSA"
+    });
+
+    // Initialize libp2p node
+    const node = await window.Libp2p.create({
+      peerId: peerId,
+      addresses: {
+        listen: ['/ip4/0.0.0.0/tcp/0']
+      },
+      modules: {
+        transport: [window.Libp2pWebsockets],
+        connEncryption: [window.Libp2pNoise],
+        streamMuxer: [window.Libp2pMplex],
+        peerDiscovery: [window.Bootstrap]
+      },
+      config: {
+        peerDiscovery: {
+          bootstrap: {
+            list: [
+              "/dns4/bootstrap.libp2p.io/tcp/443/wss/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
+              "/dns4/ipfs.io/tcp/443/wss/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa"
+            ]
+          }
+        }
+      }
+    });
+
+    console.log("Libp2p node created with ID:", peerId.toB58String());
+    return node;
+  } catch (error) {
+    console.error("Error initializing libp2p:", error);
+    return null;
+  }
+}
+
+async function initializeApplication() {
+  console.log("Initializing application...");
+  
+  // Initialize libp2p (but don't block if it fails)
+  try {
+    window.libp2pNode = await initLibp2p();
+    if (window.libp2pNode) {
+      await window.libp2pNode.start();
+      console.log("Libp2p node started");
+    }
+  } catch (error) {
+    console.warn("Libp2p initialization warning:", error);
+  }
+
+  // Proceed with other initialization
+  loadAndDisplayRideRequests();
+  setInterval(loadAndDisplayRideRequests, 5000);
+
+  const closeButton = document.getElementById("close-expanded");
+  if (closeButton) {
+    closeButton.addEventListener("click", () => {
+      document.getElementById("expanded-view").classList.remove("active");
+    });
+  }
+}
+
+      // Process incoming ride request from libp2p
+      function processIncomingRideRequest(request) {
+        if (!request.pickupLocation || request.status === "accepted") return;
+
+        const existingRequest = incomingRides.find(
+          (r) => r.id === request.requestId
+        );
+
+        if (!existingRequest) {
+          const newRide = {
+            id: request.requestId || `ride-${Date.now()}`,
+            riderName: request.name || "Unknown Rider",
+            riderAvatar:
+              request.profileImage || getDefaultAvatar(request.name || "Rider"),
+            pickup: request.pickupLocation || "Unknown location",
+            destination: request.destination || "Unknown destination",
+            fare: request.fareEstimate || 0,
+            time: request.createdAt
+              ? new Date(request.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+            status: "incoming",
+            phone: request.phone
+              ? getValidPhoneNumber(request.phone)
+              : "+92 300 0000000",
+            vehicle: request.vehicleType || "Car",
+            coordinates: {
+              pickup: {
+                lat: 24.8607 + (Math.random() * 0.02 - 0.01),
+                lng: 67.0011 + (Math.random() * 0.02 - 0.01),
+              },
+            },
+          };
+
+          incomingRides.push(newRide);
+          renderRideLists();
+          updateRideCounts();
+          console.log("Added new incoming ride via libp2p:", newRide);
+        }
+      }
+
+      // Generate default avatar based on name initials
+      function getDefaultAvatar(name) {
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  const colors = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#FF33A8'];
+  const color = colors[initials.charCodeAt(0) % colors.length];
+  
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=${color.replace('#', '')}&color=fff&size=128`;
+}
+
+      // Phone number validation and formatting helper
+      function getValidPhoneNumber(phone) {
+        if (!phone || phone === "N/A") return "+92 300 0000000";
+        const cleaned = phone.toString().replace(/\D/g, "");
+        if (cleaned.length === 10 && cleaned.startsWith("3")) {
+          return `+92 ${cleaned.substring(0, 3)} ${cleaned.substring(3)}`;
+        }
+        return phone.length > 6 ? phone : "+92 300 0000000";
+      }
+
+      // Initialize the map
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 24.8607, lng: 67.0011 },
+          zoom: 12,
+          disableDefaultUI: true,
+          styles: [
+            { featureType: "poi", stylers: [{ visibility: "off" }] },
+            {
+              featureType: "transit",
+              elementType: "labels.icon",
+              stylers: [{ visibility: "off" }],
+            },
+            {
+              featureType: "road",
+              elementType: "labels.icon",
+              stylers: [{ visibility: "off" }],
+            },
+          ],
+        });
+
+        directionsRenderer = new google.maps.DirectionsRenderer({
+          suppressMarkers: true,
+          polylineOptions: {
+            strokeColor: "#1a73e8",
+            strokeOpacity: 1.0,
+            strokeWeight: 4,
+          },
+        });
+        directionsRenderer.setMap(map);
+
+        // Start watching driver's location immediately
+        startDriverLocationTracking();
+        initializeApplication();
+      }
+
+      // Start tracking driver's location
+      function startDriverLocationTracking() {
+        if (navigator.geolocation) {
+          driverLocationWatchId = navigator.geolocation.watchPosition(
+            (position) => {
+              currentDriverLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+
+              // Update driver marker if it exists
+              if (driverMarker) {
+                driverMarker.setPosition(currentDriverLocation);
+              } else {
+                // Create driver marker if it doesn't exist
+                driverMarker = new google.maps.Marker({
+                  position: currentDriverLocation,
+                  map: map,
+                  title: "Your Location",
+                  icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: "#4285F4",
+                    fillOpacity: 1,
+                    strokeColor: "#FFFFFF",
+                    strokeWeight: 2,
+                  },
+                });
+              }
+
+              // Center map on driver's location if no ride is active
+              if (!riderMarker && !destinationMarker) {
+                map.setCenter(currentDriverLocation);
+                map.setZoom(15);
+              }
+            },
+            (error) => {
+              console.error("Error getting driver location:", error);
+            },
+            {
+              enableHighAccuracy: true,
+              maximumAge: 10000,
+              timeout: 5000,
+            }
+          );
+        } else {
+          console.error("Geolocation is not supported by this browser.");
+        }
+      }
+
+
+      // In tracking.html's script
+function loadAndDisplayRides() {
+  try {
+    const rides = JSON.parse(localStorage.getItem("driverRides")) || { 
+      accepted: [], 
+      incoming: [] 
+    };
+
+    // Clear existing rides
+    document.getElementById("accepted-rides").innerHTML = "";
+    document.getElementById("incoming-rides").innerHTML = "";
+
+    // Display accepted rides
+    rides.accepted.forEach(ride => {
+      const rideCard = createRideCard(ride, "accepted");
+      document.getElementById("accepted-rides").appendChild(rideCard);
+    });
+
+    // Display incoming rides
+    rides.incoming.forEach(ride => {
+      const rideCard = createRideCard(ride, "incoming");
+      document.getElementById("incoming-rides").appendChild(rideCard);
+    });
+
+    // Update counts
+    document.getElementById("accepted-count").textContent = rides.accepted.length;
+    document.getElementById("incoming-count").textContent = rides.incoming.length;
+
+  } catch (error) {
+    console.error("Error loading rides:", error);
+  }
+}
+
+// Enhanced createRideCard function
+function createRideCard(ride, status) {
+  const card = document.createElement("div");
+  card.className = `ride-card ${status}`;
+  card.dataset.id = ride.id;
+
+  // Add vehicle icon based on type
+  let vehicleIcon;
+  switch ((ride.vehicle || "car").toLowerCase()) {
+    case "bike": vehicleIcon = '<i class="fas fa-motorcycle"></i>'; break;
+    case "auto": vehicleIcon = '<i class="fas fa-rickshaw"></i>'; break;
+    default: vehicleIcon = '<i class="fas fa-car"></i>';
+  }
+
+  // Format the time
+  const rideTime = ride.time || ride.createdAt || new Date().toISOString();
+  const formattedTime = new Date(rideTime).toLocaleTimeString([], {
+    hour: '2-digit', 
+    minute: '2-digit'
+  });
+
+  card.innerHTML = `
+    <div class="ride-card-header">
+      <div class="ride-card-title">
+        ${vehicleIcon} ${ride.vehicle || 'Car'} Ride
+      </div>
+      <div class="ride-card-time">${formattedTime}</div>
+    </div>
+    <div class="ride-card-body">
+      <img src="${ride.riderAvatar || ride.riderProfileImage || 
+        'https://via.placeholder.com/50?text=Rider'}" 
+        alt="${ride.riderName || 'Rider'}" class="rider-avatar">
+      <div class="ride-info">
+        <div class="rider-name">${ride.riderName || 'Unknown Rider'}</div>
+        <div class="ride-location">
+          <i class="fas fa-map-marker-alt"></i>
+          ${ride.pickup || ride.from || 'Unknown location'}
+        </div>
+        <div class="ride-phone">
+          <i class="fas fa-phone"></i> ${ride.phone || 'N/A'}
+        </div>
+        <div class="ride-fare">
+          PKR ${ride.fare || '0'}
+          ${ride.distance ? `<span class="ride-distance">${ride.distance} km</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${status === 'incoming' ? `
+    <div class="ride-actions">
+      <button class="btn-accept">Accept</button>
+      <button class="btn-reject">Reject</button>
+    </div>` : ''}
+  `;
+
+  // Add event listeners for action buttons
+  if (status === 'incoming') {
+    card.querySelector('.btn-accept').addEventListener('click', () => acceptRide(ride.id));
+    card.querySelector('.btn-reject').addEventListener('click', () => rejectRide(ride.id));
+  }
+
+  return card;
+}// In tracking.html
+// Listen for storage changes to update the UI in real-time
+window.addEventListener('storage', (event) => {
+  if (event.key === 'driverRides') {
+    loadAndDisplayRides();
+  }
+});
+
+// Also listen for messages from the driverDashboard page
+window.addEventListener('message', (event) => {
+  if (event.data.type === 'rideUpdate') {
+    loadAndDisplayRides();
+  }
+});
+      function initializeApplication() {
+        console.log("Initializing application...");
+        initLibp2p(); // Initialize libp2p connection
+        loadAndDisplayRideRequests();
+        setInterval(loadAndDisplayRideRequests, 5000);
+
+        const closeButton = document.getElementById("close-expanded");
+        if (closeButton) {
+          closeButton.addEventListener("click", () => {
+            document.getElementById("expanded-view").classList.remove("active");
+          });
+        }
+      }
+      window.addEventListener("storage", function (e) {
+        if (e.key === "riderData") {
+          console.log("riderData updated - reloading requests");
+          loadAndDisplayRideRequests();
+        }
+      });
+
+      // Listen for broadcast messages
+      const broadcastChannel = new BroadcastChannel("ride_requests");
+      broadcastChannel.addEventListener("message", (event) => {
+        if (event.data.type === "new_request") {
+          console.log("New ride request received via broadcast");
+          loadAndDisplayRideRequests();
+        }
+      });
+
+      // Modify loadAndDisplayRideRequests to be more robust
+      function loadAndDisplayRideRequests() {
+        console.log("Loading ride requests...");
+        try {
+          fetchRideRequestsFromLocalStorage();
+          fetchConfirmedRidesFromLocalStorage();
+          renderRideLists();
+          updateRideCounts();
+        } catch (error) {
+          console.error("Error loading ride requests:", error);
+          setTimeout(loadAndDisplayRideRequests, 1000); // Retry after 1 second
+        }
+      }
+
+      function loadAcceptedRidesFromStorage() {
+        console.log("Loading accepted rides from storage...");
+        const savedAcceptedRides = localStorage.getItem(
+          "driver_accepted_rides"
+        );
+        acceptedRides = savedAcceptedRides
+          ? JSON.parse(savedAcceptedRides)
+          : [];
+        console.log("Loaded accepted rides:", acceptedRides);
+      }
+
+      function fetchRideRequestsFromLocalStorage() {
+        try {
+          console.log("Fetching ride requests from localStorage...");
+          const riderData = localStorage.getItem("riderData");
+
+          if (riderData) {
+            const parsedData = JSON.parse(riderData);
+            if (
+              parsedData.riderRequests &&
+              Array.isArray(parsedData.riderRequests)
+            ) {
+              let addedCount = 0;
+              const processedIds = []; // 🆕 Store fetched IDs for cleanup
+
+              parsedData.riderRequests.forEach((request) => {
+                if (!request.pickupLocation || request.status === "accepted")
+                  return;
+
+                const existingRequest = incomingRides.find(
+                  (r) => r.id === request.requestId
+                );
+                if (!existingRequest) {
+                  const newRide = {
+                    id: request.requestId || `ride-${Date.now()}`,
+                    riderName: request.name || "Unknown Rider",
+                    riderAvatar:
+                      request.profileImage ||
+                      getDefaultAvatar(request.name || "Rider"),
+                    pickup: request.pickupLocation || "Unknown location",
+                    destination: request.destination || "Unknown destination",
+                    fare: request.fareEstimate || 0,
+                    time: request.createdAt
+                      ? new Date(request.createdAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : new Date().toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }),
+                    status: "incoming",
+                    phone: request.phone
+                      ? getValidPhoneNumber(request.phone)
+                      : "+92 300 0000000",
+                    vehicle: request.vehicleType || "Car",
+                    coordinates: {
+                      pickup: {
+                        lat: 24.8607 + (Math.random() * 0.02 - 0.01),
+                        lng: 67.0011 + (Math.random() * 0.02 - 0.01),
+                      },
+                    },
+                  };
+                  incomingRides.push(newRide);
+                  addedCount++;
+                  processedIds.push(request.requestId); // 🆕 Mark this request for cleanup
+                  console.log("Added new incoming ride:", newRide);
+                }
+              });
+
+              console.log(
+                `Added ${addedCount} new incoming rides from localStorage`
+              );
+
+              // ✅ Cleanup: Remove only processed (fetched) incoming requests
+              if (processedIds.length > 0) {
+                parsedData.riderRequests = parsedData.riderRequests.filter(
+                  (req) =>
+                    !(
+                      req.status !== "accepted" &&
+                      processedIds.includes(req.requestId)
+                    )
+                );
+                localStorage.setItem("riderData", JSON.stringify(parsedData));
+                console.log(
+                  "Removed fetched incoming ride requests from localStorage"
+                );
+              }
+            }
+          } else {
+            console.log("No rider data found in localStorage");
+          }
+        } catch (error) {
+          console.error("Error fetching ride requests:", error);
+        }
+      }
+
+      function fetchConfirmedRidesFromLocalStorage() {
+  try {
+    console.log("Fetching confirmed rides from localStorage...");
+    
+    // Get all ride requests from localStorage
+    const rideRequests = JSON.parse(localStorage.getItem('rideRequests')) || [];
+    console.log("All ride requests from localStorage:", rideRequests);
+
+    // Filter for accepted rides (status === "accepted")
+    const acceptedRequests = rideRequests.filter(request => request.status === "accepted");
+    console.log("Found accepted requests:", acceptedRequests);
+
+    let addedCount = 0;
+    
+    acceptedRequests.forEach(request => {
+      // Check if this ride is already in our acceptedRides array
+      if (!acceptedRides.some(r => r.id === request.id)) {
+        const newRide = {
+          id: request.id || `ride-${Date.now()}`,
+          riderName: request.riderName || "Unknown Rider",
+          riderAvatar: request.profileImage || getDefaultAvatar(request.riderName || "Rider"),
+          pickup: request.pickup || "Unknown location",
+          destination: request.destination || "Unknown destination",
+          fare: request.fare || 0,
+          time: request.timestamp 
+            ? new Date(request.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+              })
+            : new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit"
+              }),
+          status: "accepted",
+          phone: request.phone || "+92 300 0000000",
+          vehicle: request.vehicleType || "Car",
+          distance: request.distance ? `${request.distance} km` : "0 km",
+          coordinates: {
+            pickup: {
+              lat: 24.8607 + (Math.random() * 0.02 - 0.01),
+              lng: 67.0011 + (Math.random() * 0.02 - 0.01)
+            }
+          }
+        };
+        
+        acceptedRides.unshift(newRide);
+        addedCount++;
+        console.log("Added new confirmed ride from localStorage:", newRide);
+      }
+    });
+
+    console.log(`Added ${addedCount} new confirmed rides from localStorage`);
+
+    if (addedCount > 0) {
+      saveRidesToStorage();
+      console.log("Saved updated accepted rides to storage");
+    }
+  } catch (error) {
+    console.error("Error fetching confirmed rides:", error);
+  }
+}
+
+      function renderRideLists() {
+        const acceptedContainer = document.getElementById("accepted-rides");
+        const incomingContainer = document.getElementById("incoming-rides");
+
+        acceptedContainer.innerHTML = "";
+        incomingContainer.innerHTML = "";
+
+        acceptedRides.forEach((ride) => {
+          acceptedContainer.appendChild(createRideCard(ride));
+        });
+
+        incomingRides.forEach((ride) => {
+          incomingContainer.appendChild(createRideCard(ride));
+        });
+
+        document.querySelectorAll(".ride-card").forEach((card) => {
+          card.addEventListener("click", () =>
+            showExpandedView(card.dataset.id)
+          );
+        });
+      }
+
+      function createRideCard(ride) {
+        const card = document.createElement("div");
+        card.className = `ride-card ${ride.status}`;
+        card.dataset.id = ride.id;
+
+        let vehicleIcon;
+        switch (ride.vehicle.toLowerCase()) {
+          case "bike":
+            vehicleIcon = '<i class="fas fa-motorcycle"></i>';
+            break;
+          case "auto":
+            vehicleIcon = '<i class="fas fa-rickshaw"></i>';
+            break;
+          default:
+            vehicleIcon = '<i class="fas fa-car"></i>';
+        }
+
+        card.innerHTML = `
+              <div class="ride-card-header">
+                  <div class="ride-card-title">
+                      <span class="vehicle-icon">${vehicleIcon}</span>
+                      ${ride.vehicle} Ride
+                  </div>
+                  <div class="ride-card-time">${ride.time}</div>
+              </div>
+              <div class="ride-card-body">
+                  <img src="${ride.riderAvatar}" alt="${
+          ride.riderName
+        }" class="rider-avatar" 
+                      onerror="this.src='${getDefaultAvatar(ride.riderName)}'">
+                  <div class="ride-info">
+                      <div class="rider-name">${ride.riderName}</div>
+                      <div class="ride-location">
+                          <i class="fas fa-map-marker-alt"></i>
+                          ${truncateText(ride.pickup, 22)}
+                      </div>
+                      <div class="ride-phone" style="font-size: 0.7rem; color: rgba(255,255,255,0.7);">
+                          <i class="fas fa-phone"></i> ${
+                            ride.phone || "+92 300 0000000"
+                          }
+                      </div>
+                      <div class="ride-fare">
+                          PKR ${ride.fare}
+                          <span class="ride-distance">${
+                            ride.distance || ""
+                          }</span>
+                      </div>
+                  </div>
+              </div>
+          `;
+        return card;
+      }
+
+      function showExpandedView(rideId) {
+        const ride = [...acceptedRides, ...incomingRides].find(
+          (r) => r.id === rideId
+        );
+        if (!ride) return;
+
+        document.getElementById("expanded-avatar").src = ride.riderAvatar;
+        document.getElementById("expanded-name").textContent = ride.riderName;
+        document.getElementById("expanded-phone").textContent =
+          ride.phone || "+92 300 0000000";
+        document.getElementById("expanded-vehicle").textContent = ride.vehicle;
+        document.getElementById("expanded-time").textContent = ride.time;
+        document.getElementById(
+          "expanded-fare"
+        ).textContent = `PKR ${ride.fare}`;
+        document.getElementById("expanded-pickup").textContent = ride.pickup;
+        document.getElementById("expanded-destination").textContent =
+          ride.destination;
+
+        const actionButtons = document.getElementById("action-buttons");
+        actionButtons.innerHTML = "";
+
+        if (ride.status === "incoming") {
+          actionButtons.innerHTML = `
+                  <button class="btn btn-danger" id="reject-ride">
+                      <i class="fas fa-times"></i> Reject
+                  </button>
+                  <button class="btn btn-success" id="accept-ride">
+                      <i class="fas fa-check"></i> Accept
+                  </button>
+              `;
+
+          document
+            .getElementById("accept-ride")
+            ?.addEventListener("click", () => acceptRide(rideId));
+          document
+            .getElementById("reject-ride")
+            ?.addEventListener("click", () => rejectRide(rideId));
+        } else {
+          actionButtons.innerHTML = `
+                  <button class="btn btn-primary" id="start-ride">
+                      <i class="fas fa-play"></i> Start Ride
+                  </button>
+                  <button class="btn btn-danger" id="cancel-ride">
+                      <i class="fas fa-times"></i> Cancel
+                  </button>
+              `;
+
+          document
+            .getElementById("start-ride")
+            ?.addEventListener("click", () => startRide(ride));
+        }
+
+        document.getElementById("expanded-view").classList.add("active");
+      }
+
+      function acceptRide(rideId) {
+  const rideIndex = incomingRides.findIndex(r => r.id === rideId);
+  if (rideIndex === -1) return;
+
+  const ride = incomingRides[rideIndex];
+  ride.status = "accepted";
+  incomingRides.splice(rideIndex, 1);
+  acceptedRides.unshift(ride);
+  
+  // Update the status in localStorage
+  const rideRequests = JSON.parse(localStorage.getItem('rideRequests')) || [];
+  const requestIndex = rideRequests.findIndex(r => r.id === rideId);
+  
+  if (requestIndex !== -1) {
+    rideRequests[requestIndex].status = "accepted";
+    localStorage.setItem('rideRequests', JSON.stringify(rideRequests));
+  }
+  
+  saveRidesToStorage();
+  renderRideLists();
+  updateRideCounts();
+
+  // Show waiting popup
+  showWaitingPopup();
+
+  document.getElementById("expanded-view").classList.remove("active");
+
+  // Simulate rider confirmation after 5 seconds
+  setTimeout(() => {
+    showConfirmationPopup(ride.riderName, ride.fare);
+  }, 5000);
+}
+      function handleRideConfirmation(confirmation) {
+        const ride = acceptedRides.find((r) => r.id === confirmation.rideId);
+        if (ride) {
+          showConfirmationPopup(ride.riderName, ride.fare);
+        }
+      }
+
+      function rejectRide(rideId) {
+        const rideIndex = incomingRides.findIndex((r) => r.id === rideId);
+        if (rideIndex === -1) return;
+
+        incomingRides.splice(rideIndex, 1);
+        saveRidesToStorage();
+        renderRideLists();
+        updateRideCounts();
+        document.getElementById("expanded-view").classList.remove("active");
+      }
+
+      function saveRidesToStorage() {
+        localStorage.setItem(
+          "driver_accepted_rides",
+          JSON.stringify(acceptedRides)
+        );
+      }
+
+      function updateRideCounts() {
+        document.getElementById("accepted-count").textContent =
+          acceptedRides.length;
+        document.getElementById("incoming-count").textContent =
+          incomingRides.length;
+      }
+
+      function truncateText(text, maxLength) {
+        return text.length > maxLength
+          ? text.substring(0, maxLength) + "..."
+          : text;
+      }
+
+      async function geocodeAddress(address) {
+        const geocoder = new google.maps.Geocoder();
+        return new Promise((resolve, reject) => {
+          geocoder.geocode({ address }, (results, status) => {
+            if (status === "OK" && results[0]) {
+              const location = results[0].geometry.location;
+              resolve({
+                lat: location.lat(),
+                lng: location.lng(),
+              });
+            } else {
+              reject(new Error(`Geocode failed for address: ${address}`));
+            }
+          });
+        });
+      }
+
+      async function startRide(ride) {
+        try {
+          clearMapMarkers();
+
+          // Use the current driver location if available
+          if (!currentDriverLocation) {
+            throw new Error("Driver location not available");
+          }
+
+          // Geocode addresses
+          const pickupLocation = await geocodeAddress(ride.pickup);
+          const destinationLocation = await geocodeAddress(
+            ride.destination || "Bahadurabad, Karachi"
+          );
+
+          // Center map on driver's location
+          map.setCenter(currentDriverLocation);
+          map.setZoom(14);
+
+          // Add markers
+          addMarkers(
+            currentDriverLocation,
+            pickupLocation,
+            destinationLocation
+          );
+
+          // Draw lines
+          drawDriverToRiderLine(currentDriverLocation, pickupLocation);
+          await drawRiderToDestinationRoute(
+            pickupLocation,
+            destinationLocation
+          );
+
+          // Auto-close the expanded view
+          const expandedView = document.getElementById("expanded-view");
+          if (expandedView) {
+            expandedView.classList.remove("active");
+          }
+        } catch (error) {
+          console.error("Error in startRide:", error);
+          alert(`Error: ${error.message}`);
+        }
+      }
+
+      function clearMapMarkers() {
+        if (driverMarker) driverMarker.setMap(null);
+        if (riderMarker) riderMarker.setMap(null);
+        if (destinationMarker) destinationMarker.setMap(null);
+        if (driverToRiderPolyline) driverToRiderPolyline.setMap(null);
+        directionsRenderer.setDirections({ routes: [] });
+      }
+
+      function addMarkers(driverLocation, riderLocation, destinationLocation) {
+        // Driver marker (blue dot)
+        driverMarker = new google.maps.Marker({
+          position: driverLocation,
+          map: map,
+          title: "Your Location",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#4285F4",
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          },
+        });
+
+        // Rider marker (green dot)
+        riderMarker = new google.maps.Marker({
+          position: riderLocation,
+          map: map,
+          title: "Rider Location",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#0F9D58",
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          },
+        });
+
+        // Destination marker (red dot)
+        destinationMarker = new google.maps.Marker({
+          position: destinationLocation,
+          map: map,
+          title: "Destination",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#DB4437",
+            fillOpacity: 1,
+            strokeColor: "#FFFFFF",
+            strokeWeight: 2,
+          },
+        });
+      }
+
+      function drawDriverToRiderLine(driverLocation, riderLocation) {
+        driverToRiderPolyline = new google.maps.Polyline({
+          path: [driverLocation, riderLocation],
+          geodesic: true,
+          strokeColor: "#FFD700", // Yellow color
+          strokeOpacity: 1.0,
+          strokeWeight: 4,
+          map: map,
+        });
+      }
+
+      function drawRiderToDestinationRoute(riderLocation, destinationLocation) {
+        return new Promise((resolve) => {
+          const directionsService = new google.maps.DirectionsService();
+          directionsService.route(
+            {
+              origin: riderLocation,
+              destination: destinationLocation,
+              travelMode: google.maps.TravelMode.DRIVING,
+              optimizeWaypoints: true,
+            },
+            (response, status) => {
+              if (status === "OK") {
+                directionsRenderer.setDirections(response);
+              } else {
+                console.error("Directions request failed:", status);
+              }
+              resolve();
+            }
+          );
+        });
+      }
+
+      function loadGoogleMaps() {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBOLanVMv6TpHj1LZPwwF9o2kGV3fKBNCk&loading=async&libraries=places,geometry,routes&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+
+      // Clean up when page unloads
+      window.addEventListener("beforeunload", () => {
+        if (driverLocationWatchId !== null) {
+          navigator.geolocation.clearWatch(driverLocationWatchId);
+        }
+        if (libp2pNode) {
+          libp2pNode
+            .stop()
+            .catch((err) => console.error("Error stopping libp2p:", err));
+        }
+      });
+
+      // Start the application when DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", loadGoogleMaps);
+    </script>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="map-section">
+        <div id="map"></div>
+      </div>
+
+      <div class="ride-section">
+        <div class="ride-lists">
+          <div class="ride-list">
+            <div class="list-header">
+              <h2>
+                <div class="icon">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                Accepted Rides
+                <span class="badge" id="accepted-count">0</span>
+              </h2>
+            </div>
+            <div class="rides-container" id="accepted-rides"></div>
+          </div>
+
+          <div class="ride-list">
+            <div class="list-header">
+              <h2>
+                <div class="icon">
+                  <i class="fas fa-bell"></i>
+                </div>
+                Incoming Requests
+                <span class="badge" id="incoming-count">0</span>
+              </h2>
+            </div>
+            <div class="rides-container" id="incoming-rides"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="expanded-view" id="expanded-view">
+      <div class="expanded-card">
+        <div class="expanded-header">
+          <button class="close-expanded" id="close-expanded">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="rider-profile">
+            <img
+              src=""
+              alt="Rider"
+              class="expanded-avatar"
+              id="expanded-avatar"
+            />
+            <div class="rider-details">
+              <h3 id="expanded-name">Rider Name</h3>
+              <p>
+                <i class="fas fa-phone"></i>
+                <span id="expanded-phone">+92 300 1234567</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="expanded-content">
+          <div class="ride-meta">
+            <div class="meta-item">
+              <div class="meta-label">
+                <i class="fas fa-car"></i>
+                Vehicle
+              </div>
+              <div class="meta-value" id="expanded-vehicle">Car</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">
+                <i class="fas fa-clock"></i>
+                Time
+              </div>
+              <div class="meta-value" id="expanded-time">10:15 AM</div>
+            </div>
+            <div class="meta-item">
+              <div class="meta-label">
+                <i class="fas fa-money-bill-wave"></i>
+                Fare
+              </div>
+              <div class="meta-value fare" id="expanded-fare">PKR 350</div>
+            </div>
+          </div>
+
+          <div class="location-section">
+            <div class="location-card">
+              <h4>
+                <i class="fas fa-map-marker-alt"></i>
+                Pickup Location
+              </h4>
+              <p id="expanded-pickup">Gulshan-e-Iqbal Block 5, Karachi</p>
+            </div>
+            <div class="location-card">
+              <h4>
+                <i class="fas fa-flag"></i>
+                Destination
+              </h4>
+              <p id="expanded-destination">Bahadurabad, Karachi</p>
+            </div>
+          </div>
+
+          <div class="action-buttons" id="action-buttons"></div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/libp2p/driver.js"></script>
+  </body>
+</html>
